@@ -2,6 +2,8 @@
 
 Track and analyze your brand's visibility across AI-powered search platforms.
 
+<img width="1417" height="706" alt="Screenshot 2025-12-29 at 1 10 36 PM" src="https://github.com/user-attachments/assets/72728670-1c33-4702-ac17-096000c64c02" />
+
 ## Overview
 
 Prompt Clarity monitors how AI models like ChatGPT, Claude, Gemini, Perplexity, and Grok mention and recommend your business in response to relevant search prompts. As AI assistants become a primary way people discover products and services, understanding your brand's presence in these platforms is critical for marketing strategy.
