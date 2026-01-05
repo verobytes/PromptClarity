@@ -9,12 +9,24 @@ export interface PromptConfig {
   maxOutputTokens: number;
 }
 
+// Find config directory - checks user config first, then falls back to defaults
+function findConfigDir(subdir: string): string {
+  const userConfigDir = path.join(process.cwd(), 'data', 'config', subdir);
+  const defaultConfigDir = path.join(process.cwd(), 'config', subdir);
+
+  if (fs.existsSync(userConfigDir)) {
+    return userConfigDir;
+  }
+  return defaultConfigDir;
+}
+
 class PromptConfigLoader {
   private configs: Map<string, PromptConfig> = new Map();
   private configDir: string;
 
   constructor() {
-    this.configDir = path.join(process.cwd(), 'config', 'prompts');
+    this.configDir = findConfigDir('prompts');
+    console.log(`Loading prompt configs from: ${this.configDir}`);
     this.loadConfigs();
   }
 
@@ -25,24 +37,24 @@ class PromptConfigLoader {
       { name: 'onboarding-competitors', key: 'competitors' },
       { name: 'mention-analysis', key: 'mentionAnalysis' }
     ];
-    
+
     for (const { name, key } of files) {
       try {
         // Try YAML first, then JSON
         const yamlPath = path.join(this.configDir, `${name}.yaml`);
         const jsonPath = path.join(this.configDir, `${name}.json`);
-        
+
         if (fs.existsSync(yamlPath)) {
           const content = fs.readFileSync(yamlPath, 'utf-8');
           const config = yaml.load(content) as PromptConfig;
           this.configs.set(key, config);
-          console.log(`Loaded onboarding prompt config from YAML: ${key}`);
+          console.log(`Loaded prompt config: ${key}`);
         } else if (fs.existsSync(jsonPath)) {
           const content = fs.readFileSync(jsonPath, 'utf-8');
           this.configs.set(key, JSON.parse(content));
-          console.log(`Loaded onboarding prompt config from JSON: ${key}`);
+          console.log(`Loaded prompt config: ${key}`);
         } else {
-          console.warn(`Onboarding prompt config file not found: ${name}.yaml or ${name}.json`);
+          console.warn(`Prompt config file not found: ${name}.yaml or ${name}.json`);
         }
       } catch (error) {
         console.error(`Error loading prompt config ${name}:`, error);

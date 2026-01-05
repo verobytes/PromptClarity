@@ -12,9 +12,23 @@ export interface PlatformConfigWithId extends PlatformConfig {
   id: string;
 }
 
+// Find config file path - checks user config first, then falls back to defaults
+function findConfigPath(relativePath: string): string {
+  const userConfigPath = path.join(process.cwd(), 'data', 'config', relativePath);
+  const defaultConfigPath = path.join(process.cwd(), 'config', relativePath);
+
+  if (fs.existsSync(userConfigPath)) {
+    console.log(`Loading config from user path: ${userConfigPath}`);
+    return userConfigPath;
+  }
+
+  console.log(`Loading config from default path: ${defaultConfigPath}`);
+  return defaultConfigPath;
+}
+
 // Load platform configurations from YAML file
 function loadPlatformConfigs(): Record<string, PlatformConfig> {
-  const configPath = path.join(process.cwd(), 'config', 'platforms', 'platforms.yaml');
+  const configPath = findConfigPath('platforms/platforms.yaml');
   const fileContents = fs.readFileSync(configPath, 'utf8');
   const data = yaml.load(fileContents) as { platforms: Record<string, PlatformConfig> };
   return data.platforms;

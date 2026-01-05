@@ -17,9 +17,23 @@ export interface PricingConfig {
   providers: Record<string, ProviderPricing>;
 }
 
+// Find config file path - checks user config first, then falls back to defaults
+function findConfigPath(relativePath: string): string {
+  const userConfigPath = path.join(process.cwd(), 'data', 'config', relativePath);
+  const defaultConfigPath = path.join(process.cwd(), 'config', relativePath);
+
+  if (fs.existsSync(userConfigPath)) {
+    console.log(`Loading pricing config from user path: ${userConfigPath}`);
+    return userConfigPath;
+  }
+
+  console.log(`Loading pricing config from default path: ${defaultConfigPath}`);
+  return defaultConfigPath;
+}
+
 // Load pricing configuration from YAML file
 function loadPricingConfig(): PricingConfig {
-  const configPath = path.join(process.cwd(), 'config', 'pricing', 'model-pricing.yaml');
+  const configPath = findConfigPath('pricing/model-pricing.yaml');
   const fileContents = fs.readFileSync(configPath, 'utf8');
   return yaml.load(fileContents) as PricingConfig;
 }
